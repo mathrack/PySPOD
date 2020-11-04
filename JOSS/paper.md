@@ -28,40 +28,56 @@ aas-journal: Astrophysical Journal <- The name of the AAS journal. -->
 
 # Summary
 
-Large unstructured datasets may contain hidden coherent patterns that 
-is not possible to observe unless 
- 
-The forces on stars, galaxies, and dark matter under external gravitational
-fields lead to the dynamical evolution of structures in the universe. The orbits
-of these bodies are therefore key to understanding the formation, history, and
-future state of galaxies. The field of "galactic dynamics," which aims to model
-the gravitating components of galaxies to study their structure and evolution,
-is now well-established, commonly taught, and frequently used in astronomy.
-Aside from toy problems and demonstrations, the majority of problems require
-efficient numerical tools, many of which require the same base code (e.g., for
-performing numerical orbit integration).
+Large unstructured datasets may contain complex coherent patterns that 
+evolve in time and space, and that the human eye cannot grasp. These 
+patterns are frequently essential to unlock our understanding of complex 
+systems that can arise in nature, such as the evolution of the atmosphere 
+in the short (weather prediction) and long term (climate prediction), 
+the behavior of turbulent flows, and the dynamics of plate tectonics, 
+among several others. Identifying these coherent structures can therefore 
+prove crucial to facilitate the construction of modeling tools that can 
+help anticipate scenarios that would otherwise be not predictable
+
+Within this context, dynamical system theory, complemented with recent 
+advances in machine learning and data mining tools, is achieving tremendous 
+advances in our ability to acquire actionable information from data arising 
+from complex systems. Singular-value decomposition based tools, in particular, 
+are a promising area that is gaining popularity, due to its links to 
+reduced order modeling and dynamical systems. Also, these tools can be used 
+in the context of machine learning as additional inputs to the architecture, 
+thereby enhancing the datasets and possibly helping in the interpretability 
+of the results. 
+
+While, several variants of singular-value decomposition based techniques 
+have been proposed in the literature, this library provides an efficient 
+implementaiton of the so-called spectral proper orthogonal decomposition 
+(SPOD) [@lumley1970], [@towne2017], that is also referred to as spectral 
+empricial orthogonal function (SEOF) in the weather and climate community 
+[@schmidt2019a].
+
 
 # Statement of need
 
-`Gala` is an Astropy-affiliated Python package for galactic dynamics. Python
-enables wrapping low-level languages (e.g., C) for speed without losing
-flexibility or ease-of-use in the user-interface. The API for `Gala` was
-designed to provide a class-based and user-friendly interface to fast (C or
-Cython-optimized) implementations of common operations such as gravitational
-potential and force evaluation, orbit integration, dynamical transformations,
-and chaos indicators for nonlinear dynamics. `Gala` also relies heavily on and
-interfaces well with the implementations of physical units and astronomical
-coordinate systems in the `Astropy` package [@astropy] (`astropy.units` and
-`astropy.coordinates`).
+`PySPOD` is a modular Python package that implements three different variants 
+of SPOD, (i) a low storage, (ii) a low RAM, and (iii) a streaming version 
+[@schmidt2019b]. The three versions differ in terms of I/O and RAM requirements. 
+The low storage version allows faster computations, and it is intended for small 
+datasets, or large RAM machines. The low RAM and streaming versions can handle 
+large datasets, but they are typically slower than the low storage counterpart. 
+The API to the library offers a flexible and user-friendly experience, and 
+the library can be complemented with additional SPOD algorithms in an easy-to-implement
+way. The structure of the library and the use of Python enable efficient 
+interfacing with low level and highly optimized libraries (written in C 
+or Fortran) for the calculation of e.g. the fast Fourier transform, eigenvalue 
+decomposition, and other linear algebra operations. Users can also take advantage 
+of the ready-to-use postprocessing tools offered, and they can easily extend 
+the postprocessing functionalities to suit their needs. 
 
-`Gala` was designed to be used by both astronomical researchers and by
-students in courses on gravitational dynamics or astronomy. It has already been
-used in a number of scientific publications [@Pearson:2017] and has also been
-used in graduate courses on Galactic dynamics to, e.g., provide interactive
-visualizations of textbook material [@Binney:2008]. The combination of speed,
-design, and support for Astropy functionality in `Gala` will enable exciting
-scientific explorations of forthcoming data releases from the *Gaia* mission
-[@gaia] by students and experts alike.
+`PySPOD` is designed to be used in different fields of engineering and applied 
+science, including weather and climate, fluidmechanics, seismology, among others.
+It can be used as a production code, for the analysis of large datasets, as well 
+as for experimenting on smaller problems. Users can be students and experts alike.
+
 
 # Mathematics
 
