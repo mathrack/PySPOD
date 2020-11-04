@@ -34,23 +34,23 @@ patterns are frequently essential to unlock our understanding of complex
 systems that can arise in nature, such as the evolution of the atmosphere 
 in the short (weather prediction) and long term (climate prediction), 
 the behavior of turbulent flows, and the dynamics of plate tectonics, 
-among several others. Identifying these coherent structures can therefore 
+among several others. Identifying these coherent structures can  
 prove crucial to facilitate the construction of modeling tools that can 
 help anticipate scenarios that would otherwise be not predictable
 
 Within this context, dynamical system theory, complemented with recent 
 advances in machine learning and data mining tools, is achieving tremendous 
-advances in our ability to acquire actionable information from data arising 
-from complex systems. Singular-value decomposition based tools, in particular, 
-are a promising area that is gaining popularity, due to its links to 
-reduced order modeling and dynamical systems. Also, these tools can be used 
-in the context of machine learning as additional inputs to the architecture, 
-thereby enhancing the datasets and possibly helping in the interpretability 
-of the results. 
+advances in our ability to acquire actionable information from complex 
+data. Singular-value decomposition based tools, in particular, are a 
+promising area that is gaining popularity, due to its links to reduced 
+order modeling and dynamical systems. Also, these tools can be used in 
+the context of machine learning as additional inputs to the learning 
+architecture, thereby augmenting the dataset and possibly helping in 
+the interpretability of the results. 
 
 While, several variants of singular-value decomposition based techniques 
 have been proposed in the literature, this library provides an efficient 
-implementaiton of the so-called spectral proper orthogonal decomposition 
+implementation of the so-called spectral proper orthogonal decomposition 
 (SPOD) [@lumley1970], [@towne2017], that is also referred to as spectral 
 empricial orthogonal function (SEOF) in the weather and climate community 
 [@schmidt2019a].
