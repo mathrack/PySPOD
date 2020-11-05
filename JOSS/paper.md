@@ -36,7 +36,7 @@ in the short (weather prediction) and long term (climate prediction),
 the behavior of turbulent flows, and the dynamics of plate tectonics, 
 among several others. Identifying these coherent structures can  
 prove crucial to facilitate the construction of modeling tools that can 
-help anticipate scenarios that would otherwise be not predictable
+help anticipate scenarios that would otherwise be not predictable.
 
 Within this context, dynamical system theory, complemented with recent 
 advances in machine learning and data mining tools, is achieving tremendous 
@@ -52,11 +52,11 @@ While, several variants of singular-value decomposition based techniques
 have been proposed in the literature, this library provides an efficient 
 implementation of the so-called spectral proper orthogonal decomposition 
 (SPOD) [@lumley1970], [@towne2017], that is also referred to as spectral 
-empricial orthogonal function (SEOF) in the weather and climate community 
+empirical orthogonal function (SEOF) in the weather and climate community 
 [@schmidt2019a].
 
 
-# Statement of need
+# Capabilities 
 
 `PySPOD` is a modular Python package that implements three different variants 
 of SPOD, (i) a low storage, (ii) a low RAM, and (iii) a streaming version 
@@ -77,38 +77,24 @@ the postprocessing functionalities to suit their needs.
 science, including weather and climate, fluidmechanics, seismology, among others.
 It can be used as a production code, for the analysis of large datasets, as well 
 as for experimenting on smaller problems. Users can be students and experts alike.
+For an overview of the guidelines one should follow when using SPOD, the reader 
+can refer to [@schmidt2020].
+
+In figure \autoref{fig:MEI}, we show the application of this package to identify 
+the Multivariate ENSO Index from ECMWF reanalysis datasets (E20C in particular), 
+where we used monthly averages of (i) mean sea level pressure (MSL), (ii) Zonal 
+component of the surface wind (U10), (iii) Meridional component of the surface 
+wind (V10), (iv) Sea surface temperature (SST),(v) 2-meter temperature (T2M), 
+and (vi) Total cloud cover (TCC). Figure \autoref{fig:MEI} shows the leading 
+modes of the meridional component of the surface wind (left), and of the mean 
+seal-level pressure (right). It is possible to appreciate a possible coupling 
+between ENSO and the vortices over West Antarctica (that in turn could affect 
+the height of the ice shelves [@paolo2018]). For more detail regarding this 
+simulation, the interested reader can refer to [@schmidt2019a].
+
+![Identification of the Multivariate ENSO Index (MEI) from ECMWF reanalysis data.\label{fig:MEI}](../readme/MEI.png)
 
 
-# Mathematics
-
-Single dollars ($) are required for inline mathematics e.g. $f(x) = e^{\pi/x}$
-
-Double dollars make self-standing equations:
-
-$$\Theta(x) = \left\{\begin{array}{l}
-0\textrm{ if } x < 0\cr
-1\textrm{ else}
-\end{array}\right.$$
-
-You can also use plain \LaTeX for equations
-\begin{equation}\label{eq:fourier}
-\hat f(\omega) = \int_{-\infty}^{\infty} f(x) e^{i\omega x} dx
-\end{equation}
-and refer to \autoref{eq:fourier} from text.
-
-# Citations
-
-Citations to entries in paper.bib should be in
-[rMarkdown](http://rmarkdown.rstudio.com/authoring_bibliographies_and_citations.html)
-format.
-
-If you want to cite a software repository URL (e.g. something on GitHub without a preferred
-citation) then you can do it with the example BibTeX entry below for @fidgit.
-
-For a quick reference, the following citation commands can be used:
-- `@author:2001`  ->  "Author et al. (2001)"
-- `[@author:2001]` -> "(Author et al., 2001)"
-- `[@author1:2001; @author2:2001]` -> "(Author1 et al., 2001; Author2 et al., 2002)"
 
 # Figures
 
