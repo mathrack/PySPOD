@@ -3,13 +3,14 @@ import os
 import sys
 from setuptools import setup
 from setuptools import Command
+from setuptools import find_packages
 
 # GLOBAL VARIABLES
 NAME = "pyspod"
 URL = 'https://github.com/mengaldo/PySPOD'
 AUTHOR = "Gianmarco Mengaldo"
 EMAIL = "gianmarco.mengaldo@gmail.com"
-VERSION = "0.1"
+VERSION = "0.3"
 KEYWORDS='spectral-proper-orthogonal-decomposition spod'
 REQUIRED = [
     "numpy",
@@ -104,7 +105,19 @@ setup(
 	keywords=KEYWORDS,
 	url=URL,
 	license='MIT',
-	packages=[NAME],
+	# packages=[NAME],
+    packages=find_packages(),
+    package_data={'': [
+        'plotting_support/coast.mat',
+        'plotting_support/coast_centred.mat'
+    ]},
+    data_files=[
+        ('pyspod',['pyspod/plotting_support/coast.mat']),
+        ('pyspod',['pyspod/plotting_support/coast_centred.mat'])],
+    # package_dir={NAME: NAME},
+    # package_data={NAME: [
+    #     'pyspod/plotting_support/*.mat',
+    # ]},
     install_requires=REQUIRED,
     extras_require=EXTRAS,
 	include_package_data=True,
