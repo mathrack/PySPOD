@@ -9,15 +9,11 @@ tags:
 authors:
   - name: Mengaldo G.
     orcid: 0000-0002-0157-5477
-    affiliation: "1, 2" # (Multiple affiliations must be quoted)
-  - name: Author Without ORCID
-    affiliation: 2
-  - name: Author with no affiliation
-    affiliation: 3
+    affiliation: "1" # (Multiple affiliations must be quoted)
 affiliations:
  - name: National University of Singapore
    index: 1
-date: 2 November 2020
+date: 6 November 2020
 bibliography: paper.bib
 
 # Optional fields if submitting to a AAS journal too, see this blog post:
@@ -53,7 +49,9 @@ have been proposed in the literature, this library provides an efficient
 implementation of the so-called spectral proper orthogonal decomposition 
 (SPOD) [@lumley1970], [@towne2017], that is also referred to as spectral 
 empirical orthogonal function (SEOF) in the weather and climate community 
-[@schmidt2019a].
+[@schmidt2019a]. We note that for SPOD to be effective in identfying 
+spatio-temporal coherent patterns, the underlying data must be statistically 
+stationary (see also [@schmidt2020]).
 
 
 # Capabilities 
