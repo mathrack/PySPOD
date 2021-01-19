@@ -11,6 +11,7 @@ import psutil
 import warnings
 import numpy as np
 import scipy.special as sc
+from tqdm import tqdm
 
 # Import custom Python packages
 import pyspod.postprocessing as post
@@ -784,3 +785,203 @@ class SPOD_base(object):
 			time_limits=[0,time_limits[-1]], vars_idx=vars_idx, sampling=sampling,
 			x1=x1, x2=x2, coastlines=coastlines, figsize=figsize, path=self.save_dir,
 			filename=filename)
+
+
+	# ---------------------------------------------------------------------------
+
+
+
+	# Data-driven emulation (after modes and DFT blocks are saved to disk)
+	# ---------------------------------------------------------------------------
+	def get_coefficients(self):
+		'''
+		Get Fourier transformed data and modes
+		'''
+
+		'''
+		Inner product for projection - requires loading Qfft blocks
+		'''
+		# Load modes
+		n_modes_save = self._n_blocks
+		if 'n_modes_save' in self._params: n_modes_save = self._params['n_modes_save']
+
+		# For each frequency
+		for iFreq in tqdm(range(0,self._n_freq),desc='computing coefficients'):
+			# load FFT data from previously saved file
+			Q_hat_f = np.zeros([self._nx,self._n_blocks], dtype='complex_')
+			for iBlk in range(0,self._n_blocks):
+				file = os.path.join(self._save_dir_blocks,'fft_block{:04d}_freq{:04d}.npy'.format(iBlk,iFreq))
+				Q_hat_f[:,iBlk] = np.load(file)
+
+			file_psi = os.path.join(self._save_dir_blocks,'modes1to{:04d}_freq{:04d}.npy'.format(n_modes_save,iFreq))
+			Psi = np.load(file_psi)
+			Psi = Psi.reshape(-1,n_modes_save)
+
+			# compute inner product between Qfft and modes
+			a_k = np.matmul(Psi.T, Q_hat_f * self._weights).T
+			# Save these coefficients for posterity
+			file_a_k = os.path.join(self._save_dir_blocks,'coeffs1to{:04d}_freq{:04d}.npy'.format(n_modes_save,iFreq))
+			np.save(file_a_k, a_k)
+
+	def build_emulator(self):
+
+		# Load coefficients
+		coeff_list = [] # Need to stack coefficients from multiple frequencies
+
+		# Load coefficients and append
+		n_modes_save = self._n_blocks
+		if 'n_modes_save' in self._params: n_modes_save = self._params['n_modes_save']
+
+		for iFreq in tqdm(range(0,self._n_freq),desc='loading coefficients'):
+			file_a_k = os.path.join(self._save_dir_blocks,'coeffs1to{:04d}_freq{:04d}.npy'.format(n_modes_save,iFreq))
+			a_k = np.load(file_a_k)
+			coeff_list.append(a_k)
+
+		# Training data
+		emulator_prep_data = np.moveaxis(np.asarray(coeff_list),0,1)
+
+		# Set up the data in the right shape for input<->output relationship
+		input_block = []
+		output_block = []
+		for sample in range(self._n_blocks-1):
+			input_block.append(emulator_prep_data[sample])
+			output_block.append(emulator_prep_data[sample+1])
+
+		# Do the training and testing split
+		num_train_blocks = int(0.7*self._n_blocks)
+
+		# Split
+		self.training_data_ip = np.asarray(input_block[:num_train_blocks])
+		self.training_data_op = np.asarray(output_block[:num_train_blocks])
+
+		self.testing_data_ip = np.asarray(input_block[num_train_blocks:])
+		self.testing_data_op = np.asarray(output_block[num_train_blocks:])
+
+		# if normalize:
+		# 	self.lstm_normalize = True
+
+		# 	train_ip_shape = self.training_data_ip.shape
+		# 	train_op_shape = self.training_data_op.shape
+		# 	test_ip_shape = self.testing_data_ip.shape
+		# 	test_op_shape = self.testing_data_op.shape
+			
+		# 	from sklearn.preprocessing import MinMaxScaler
+			
+		# 	self.ip_scaler = MinMaxScaler()
+
+		# 	self.training_data_ip = self.ip_scaler.fit_transform(
+		# 					self.training_data_ip.reshape(-1,train_ip_shape[-1])).reshape(train_ip_shape)
+			
+		# 	self.testing_data_ip = self.ip_scaler.fit(
+		# 					self.testing_data_ip.reshape(-1,test_ip_shape[-1])).reshape(test_ip_shape)
+
+		# 	self.op_scaler = MinMaxScaler()
+
+		# 	self.training_data_op = self.op_scaler.fit_transform(
+		# 					self.training_data_op.reshape(-1,train_op_shape[-1])).reshape(train_op_shape)
+			
+		# 	self.testing_data_op = self.op_scaler.fit(
+		# 					self.testing_data_op.reshape(-1,test_op_shape[-1])).reshape(test_op_shape)
+
+		# Construct the LSTM model
+		self.generate_lstm_model()
+
+
+	def generate_lstm_model(self):
+		'''
+		We will need to update the requirements for this guy here
+		Tested with TensorFlow 2.3
+		'''
+		import tensorflow as tf
+		from tensorflow.keras.layers import LSTM, Dense, Reshape, Input
+		from tensorflow.keras import optimizers, models, regularizers
+		from tensorflow.keras import backend as K
+		from tensorflow.keras.callbacks import ModelCheckpoint, EarlyStopping
+		from tensorflow.keras.models import load_model, Model
+		from tensorflow.keras.utils import plot_model
+
+		def coeff_determination(y_pred, y_true): 
+			SS_res =  K.sum(K.square( y_true-y_pred ),axis=0) 
+			SS_tot = K.sum(K.square( y_true - K.mean(y_true,axis=0) ),axis=0 )
+			return K.mean(1 - SS_res/(SS_tot + K.epsilon()) )
+
+		n_modes_save = self._n_blocks
+		if 'n_modes_save' in self._params: n_modes_save = self._params['n_modes_save']
+
+		lstm_inputs = Input(shape=(self._n_freq,n_modes_save,),name='lstm_inputs')
+		x = LSTM(50,return_sequences=True)(lstm_inputs)
+		x = LSTM(50,return_sequences=True)(x)
+		lstm_outputs = Dense(n_modes_save,activation=None)(x)
+
+		self.lstm_model = Model(inputs=lstm_inputs,outputs=lstm_outputs,name='Emulation_Model')
+
+		# design network
+		self.lstm_filepath = os.path.join(self._save_dir_blocks,'emulator_weights.h5')
+		lstm_adam = optimizers.Adam(lr=0.0001, beta_1=0.9, beta_2=0.999, epsilon=None, decay=0.0, amsgrad=False)
+		checkpoint = ModelCheckpoint(self.lstm_filepath, monitor='loss', verbose=0, save_best_only=True, mode='min',save_weights_only=True)
+		earlystopping = EarlyStopping(monitor='loss', min_delta=0, patience=5, verbose=0, mode='auto', baseline=None, restore_best_weights=False)
+		self.lstm_callbacks_list = [checkpoint, earlystopping]
+
+		# fit network
+		self.lstm_model.compile(optimizer=lstm_adam,loss='mean_squared_error',metrics=[coeff_determination])
+		self.lstm_model.summary()
+
+		return None
+
+	def fit_emulator(self,batch_size,num_epochs):
+		self.lstm_train_history = self.lstm_model.fit(self.training_data_ip, self.training_data_op, 
+			epochs=num_epochs, batch_size=batch_size, callbacks=self.lstm_callbacks_list)
+
+		# Load the best weights after training
+		self.lstm_model.load_weights(self.lstm_filepath)
+
+	def test_emulator(self):
+		self.testing_data_pred = self.lstm_model.predict(self.testing_data_ip)
+		test_op_shape = self.testing_data_pred.shape
+		
+		# if self.lstm_normalize:
+		# 	self.testing_data_pred = self.op_scaler.inverse_transform(
+		# 					self.testing_data_pred.reshape(-1,test_op_shape[-1])).reshape(test_op_shape)
+
+		'''
+		Reconstruct Qfft blocks
+		'''
+		# Testing reconstruction
+		num_train_blocks = int(0.7*self._n_blocks)
+		num_test_blocks = self._n_blocks - int(0.7*self._n_blocks)
+
+
+		# Load modes
+		n_modes_save = self._n_blocks
+		if 'n_modes_save' in self._params: n_modes_save = self._params['n_modes_save']
+
+		# For each frequency
+		for iFreq in tqdm(range(0,self._n_freq),desc='computing predicted coefficients'):
+			# Load modes
+			file_psi = os.path.join(self._save_dir_blocks,'modes1to{:04d}_freq{:04d}.npy'.format(n_modes_save,iFreq))
+			Psi = np.load(file_psi)
+			Psi = Psi.reshape(-1,n_modes_save)
+
+			# Compute FFT data from modes and LSTM predicted coefficients
+			Q_hat_f_pred = np.zeros([self._nx,num_test_blocks], dtype='complex_')
+
+			for iBlk in range(num_test_blocks):
+				Q_hat_f[:,iBlk] = 
+
+				# compute inner product between Qfft and modes
+				a_k = np.matmul(Psi.T, Q_hat_f * self._weights).T
+			
+
+			file_a_k = os.path.join(self._save_dir_blocks,'coeffs1to{:04d}_freq{:04d}.npy'.format(n_modes_save,iFreq))
+			a_k = np.load(file_a_k)
+
+			print(a_k.shape)
+
+			# self.testing_data_pred
+		
+
+
+			
+
+
+
