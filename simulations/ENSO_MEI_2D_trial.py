@@ -72,7 +72,7 @@ if params['normalize']:
             method='variance')
 
 # Perform SPOD analysis using low storage module
-SPOD_analysis = SPOD_low_storage(X=X, params=params, data_handler=False, variables=variables)
+SPOD_analysis = SPOD_low_ram(X=X, params=params, data_handler=False, variables=variables)
 spod = SPOD_analysis.fit()
 
 # Show results
@@ -107,9 +107,9 @@ spod.plot_2D_data(
 	time_idx=[0,100,200],
 	filename=os.path.join(params['savedir'], '2D_data.png'))
 
-spod.generate_2D_data_video(
-    x1=x1-180,
-    x2=x2,
-    # coastlines='centred',
-	sampling=20,
-    vars_idx=[5])
+# spod.generate_2D_data_video(
+#     x1=x1-180,
+#     x2=x2,
+#     # coastlines='centred',
+# 	sampling=20,
+#     vars_idx=[5])
