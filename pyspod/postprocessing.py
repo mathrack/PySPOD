@@ -312,7 +312,7 @@ def plot_eigs_vs_period(eigs, freq, title='', xticks=None, yticks=None,
 def plot_2D_modes_at_frequency(modes, freq_required, freq, vars_idx=[0], modes_idx=[0],
 	x1=None, x2=None, fftshift=False, imaginary=False, plot_max=False, coastlines='',
 	title='', xticks=None, yticks=None, figsize=(12,8), equal_axes=False, path='CWD',
-	filename=None,origin=None):
+	filename=None, origin=None):
 	"""
 	Plot SPOD modes for 2D problems.
 
