@@ -112,15 +112,15 @@ class SPOD_base(object):
 			'_novlp'+str(self._n_overlap)+'_nblks'+str(self._n_blocks))
 		if not os.path.exists(self._save_dir_blocks):
 			os.makedirs(self._save_dir_blocks)
-    print('Results folder exist/created')
+		print('Results folder exist/created')
       
 		# create folder to save graph results 
 		self._save_Pdir = self._params.get('savePic',CWD)
-   	self._save_Pdir_blocks = os.path.join(self._save_Pdir,'nfft'+str(self._n_DFT)+\
-     '_novlp'+str(self._n_overlap)+'_nblks'+str(self._n_blocks)+'graphs')
+		self._save_Pdir_blocks = os.path.join(self._save_Pdir,'nfft'+str(self._n_DFT)+\
+			'_novlp'+str(self._n_overlap)+'_nblks'+str(self._n_blocks)+'graphs')
 		if not os.path.exists(self._save_Pdir_blocks):
 			os.makedirs(self._save_Pdir_blocks)
-    print('Graph folder exist/created')
+		print('Graph folder exist/created')
 
 		# compute approx problem size (assuming double)
 		pb_size = self._nt * self._nx * self._nv * 8 * BYTE_TO_GB
