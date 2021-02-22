@@ -150,8 +150,8 @@ class SPOD_base(object):
 		:rtype: str
 		'''
 		return self._save_dir
-   
-  @property
+	
+	@property
 	def save_Pdir(self):
 		'''
 		Get the directory where the graph are saved.
