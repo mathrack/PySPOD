@@ -48,6 +48,7 @@ class SPOD_low_ram(SPOD_base):
 
 		# check if blocks are already saved in memory
 		blocks_present = self._are_blocks_present(self._n_blocks,self._n_freq,self._save_dir_blocks)
+    print('THe value of block_present', blocks_present)
 
 		# loop over number of blocks and generate Fourier realizations,
 		# if blocks are not saved in storage
