@@ -115,9 +115,8 @@ class SPOD_base(object):
 		print('Results folder exist/created')
       
 		# create folder to save graph results 
-		self._save_Pdir = self._params.get('savePic',CWD)
-		self._save_Pdir_blocks = os.path.join(self._save_Pdir,'nfft'+str(self._n_DFT)+\
-			'_novlp'+str(self._n_overlap)+'_nblks'+str(self._n_blocks)+'graphs')
+		self._save_Pdir_blocks = os.path.join(self._save_dir,'Graph_of_nfft'+str(self._n_DFT)+\
+			'_novlp'+str(self._n_overlap)+'_nblks'+str(self._n_blocks))
 		if not os.path.exists(self._save_Pdir_blocks):
 			os.makedirs(self._save_Pdir_blocks)
 		print('Graph folder exist/created')
@@ -975,7 +974,7 @@ class SPOD_base(object):
 			Q_hat_f_pred = np.zeros([self._nx,num_test_blocks], dtype='complex_')
 
 			for iBlk in range(num_test_blocks):
-				Q_hat_f[:,iBlk] = 
+				#Q_hat_f[:,iBlk] = 
 
 				# compute inner product between Qfft and modes
 				a_k = np.matmul(Psi.T, Q_hat_f * self._weights).T
