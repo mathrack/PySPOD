@@ -4,11 +4,12 @@ import xarray as xr
 import numpy  as np
 from pathlib import Path
 
-# Import library specific modules
-sys.path.append("../../../")
+sys.path.append("/hpctmp/e0546050/PySPOD/")
+import pyspod
 from pyspod.spod_low_storage import SPOD_low_storage
 from pyspod.spod_low_ram     import SPOD_low_ram
 from pyspod.spod_streaming   import SPOD_streaming
+import pyspod.postprocessing as ps
 import pyspod.weights as weights
 
 # Current path
@@ -50,6 +51,7 @@ params['n_overlap'   ] = np.ceil(params['n_FFT'] * 0 / 100) # dimension block ov
 params['mean'        ] = 'blockwise' # type of mean to subtract to the data
 params['normalize'   ] = True        # normalization of weights by data variance
 params['savedir'     ] = os.path.join(CWD, 'results__ENSO_MEI_2D', Path(file).stem) # folder where to save results
+params['savePic'     ] = os.path.join(CWD, 'Graph', Path(file).stem) # folder where to save graph results
 params['weights'] = weights.geo_weights_trapz_2D(\
     lat=x2,
     lon=x1,
@@ -85,7 +87,7 @@ modes_at_freq = spod.get_modes_at_freq(freq_idx=freq_idx)
 freq = spod.freq*24
 spod.plot_eigs_vs_frequency(
 	freq=freq,
-	filename=os.path.join(params['savedir'], 'eigs_vs_frequency.png'))
+	filename=os.path.join(params['savePic'], 'eigs_vs_frequency.png'))
 spod.plot_eigs_vs_period(
 	freq=freq,
 	xticks=[1, 7, 30, 365, 1825],

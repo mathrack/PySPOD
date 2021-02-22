@@ -6,8 +6,8 @@ from pathlib import Path
 
 # Paths
 CWD = os.getcwd()
-sys.path.append(os.path.join(CWD,"../../../"))
-
+sys.path.append("/hpctmp/e0546050/PySPOD/")
+import pyspod
 # Import library specific modules
 from pyspod.spod_low_storage import SPOD_low_storage
 from pyspod.spod_low_ram     import SPOD_low_ram
@@ -69,9 +69,10 @@ modes_at_freq = spod.get_modes_at_freq(freq_idx=freq_idx)
 spod.plot_eigs()
 
 freq = spod.freq
-spod.plot_eigs_vs_frequency(freq=freq, filename=os.path.join(params['savedir'], 'eigs_vs_frequency.png'))
+spod.plot_eigs_vs_frequency(freq=freq, filename=('eigs_vs_frequency.png'))
 spod.plot_eigs_vs_period   (freq=freq, xticks=[1, 0.5, 0.2, 0.1, 0.05, 0.02],
-	filename=os.path.join(params['savedir'], 'eigs_vs_period.png'))
+	filename=('eigs_vs_period.png'))
+
 spod.plot_2D_modes_at_frequency(
 	freq_required=freq_found,
 	freq=freq,
@@ -79,10 +80,12 @@ spod.plot_2D_modes_at_frequency(
 	x2=x2,
 	modes_idx=[0,1],
 	vars_idx=[0],
-	filename=os.path.join(params['savedir'], '2D_modes.png'))
+	filename=('2D_modes.png'))
+
 spod.plot_2D_data(
 	x1=x1, x2=x2, 
 	vars_idx=[0],
 	time_idx=[0,100,200],
-	filename=os.path.join(params['savedir'], '2D_data.png'))
+	filename=('2D_data.png'))
+ 
 spod.generate_2D_data_video(x1=x1, x2=x2, vars_idx=[0])

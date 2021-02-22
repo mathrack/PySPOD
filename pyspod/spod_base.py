@@ -150,6 +150,16 @@ class SPOD_base(object):
 		:rtype: str
 		'''
 		return self._save_dir
+   
+  @property
+	def save_Pdir(self):
+		'''
+		Get the directory where the graph are saved.
+
+		:return: path to directory where graph are saved.
+		:rtype: str
+		'''
+		return self._save_Pdir_blocks
 
 	@property
 	def dim(self):
@@ -595,7 +605,7 @@ class SPOD_base(object):
 		'''
 		post.plot_eigs(
 			self.eigs, title=title, figsize=figsize, show_axes=show_axes,
-			equal_axes=equal_axes, path=self.save_dir, filename=filename)
+			equal_axes=equal_axes, path=self.save_Pdir, filename=filename)
 
 	def plot_eigs_vs_frequency(self,
 							   freq=None,
@@ -613,7 +623,7 @@ class SPOD_base(object):
 		post.plot_eigs_vs_frequency(
 			self.eigs, freq=freq, title=title, xticks=xticks, yticks=yticks,
 			show_axes=show_axes, equal_axes=equal_axes, figsize=figsize,
-			path=self.save_dir, filename=filename)
+			path=self.save_Pdir, filename=filename)
 
 	def plot_eigs_vs_period(self,
 							freq=None,
@@ -631,7 +641,7 @@ class SPOD_base(object):
 		post.plot_eigs_vs_period(
 			self.eigs, freq=freq, title=title, xticks=xticks, yticks=yticks,
 			figsize=figsize, show_axes=show_axes, equal_axes=equal_axes,
-			path=self.save_dir, filename=filename)
+			path=self.save_Pdir, filename=filename)
 
 	def plot_2D_modes_at_frequency(self,
 								   freq_required,
@@ -658,7 +668,7 @@ class SPOD_base(object):
 			self.modes, freq_required=freq_required, freq=freq, vars_idx=vars_idx,
 			modes_idx=modes_idx, x1=x1, x2=x2, fftshift=fftshift, imaginary=imaginary,
 			plot_max=plot_max, coastlines=coastlines, title=title, xticks=xticks, yticks=yticks,
-			figsize=figsize, equal_axes=equal_axes, path=self.save_dir, filename=filename)
+			figsize=figsize, equal_axes=equal_axes, path=self.save_Pdir, filename=filename)
 
 	def plot_2D_mode_slice_vs_time(self,
 								   freq_required,
@@ -680,7 +690,7 @@ class SPOD_base(object):
 			self.modes, freq_required=freq_required, freq=freq, vars_idx=vars_idx,
 			modes_idx=modes_idx, x1=x1, x2=x2, max_each_mode=max_each_mode,
 			fftshift=fftshift, title=title, figsize=figsize, equal_axes=equal_axes,
-			path=self.save_dir, filename=filename)
+			path=self.save_Pdir, filename=filename)
 
 	def plot_3D_modes_slice_at_frequency(self,
 										 freq_required,
@@ -712,7 +722,7 @@ class SPOD_base(object):
 			x3=x3, slice_dim=slice_dim, slice_id=slice_id, fftshift=fftshift,
 			imaginary=imaginary, plot_max=plot_max, coastlines=coastlines,
 			title=title, xticks=xticks, yticks=yticks, figsize=figsize,
-			equal_axes=equal_axes, path=self.save_dir, filename=filename)
+			equal_axes=equal_axes, path=self.save_Pdir, filename=filename)
 
 	def plot_mode_tracers(self,
 						  freq_required,
@@ -731,7 +741,7 @@ class SPOD_base(object):
 		post.plot_mode_tracers(
 			self.modes, freq_required=freq_required, freq=freq, coords_list=coords_list,
 			x=x, vars_idx=vars_idx, modes_idx=modes_idx, fftshift=fftshift,
-			title=title, figsize=figsize, path=self.save_dir, filename=filename)
+			title=title, figsize=figsize, path=self.save_Pdir, filename=filename)
 
 	def plot_2D_data(self,
 					 time_idx=[0],
@@ -751,7 +761,7 @@ class SPOD_base(object):
 			X=self.get_data(t_0=0, t_end=max_time_idx+1),
 			time_idx=time_idx, vars_idx=vars_idx, x1=x1, x2=x2,
 			title=title, coastlines=coastlines, figsize=figsize,
-			path=self.save_dir, filename=filename)
+			path=self.save_Pdir, filename=filename)
 
 	def plot_data_tracers(self,
 						  coords_list,
@@ -767,7 +777,7 @@ class SPOD_base(object):
 		post.plot_data_tracers(
 			X=self.get_data(t_0=time_limits[0], t_end=time_limits[-1]),
 			coords_list=coords_list, x=x, time_limits=time_limits,
-			vars_idx=vars_idx, title=title, figsize=figsize, path=self.save_dir,
+			vars_idx=vars_idx, title=title, figsize=figsize, path=self.save_Pdir,
 			filename=filename)
 
 	# ---------------------------------------------------------------------------
@@ -791,7 +801,7 @@ class SPOD_base(object):
 		post.generate_2D_data_video(
 			X=self.get_data(t_0=time_limits[0], t_end=time_limits[-1]),
 			time_limits=[0,time_limits[-1]], vars_idx=vars_idx, sampling=sampling,
-			x1=x1, x2=x2, coastlines=coastlines, figsize=figsize, path=self.save_dir,
+			x1=x1, x2=x2, coastlines=coastlines, figsize=figsize, path=self.save_Pdir,
 			filename=filename)
 
 
