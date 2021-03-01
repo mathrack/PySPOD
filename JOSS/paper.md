@@ -58,12 +58,12 @@ statistical variability of the underlying stationary random processes, and
 We note that the `PySPOD` implements the Python counterpart of the Matlab 
 code in [@schmidt-code], with the addition of the streaming algorithm outlined 
 in [@schmidt2019b]. We also acknowledge that there exist other two Python 
-packages implementing SPOD. The first, [spod-code-jburrows], is also a 
+packages implementing SPOD. The first, [@spod-code-jburrows], is also a 
 Python counterpart of the Matlab code in [@schmidt-code]. However, our 
 implementation provides extensive post-processing capabilities, testing, 
 and tutorial. It also adds the streaming version [@schmidt2019b], that 
-is not present in [spod-code-jburrows]. Similar differences exist between `PySPOD` 
-and the Python package presented in [spod-code-loiseau].
+is not present in [@spod-code-jburrows]. Similar differences exist between 
+`PySPOD` and the Python package presented in [@spod-code-loiseau].
 
 # Capabilities 
 
