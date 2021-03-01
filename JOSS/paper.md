@@ -44,10 +44,10 @@ the context of machine learning as additional inputs to the learning
 architecture, thereby augmenting the dataset and possibly helping in 
 the interpretability of the results. 
 
-While, several variants of singular-value decomposition based techniques 
-have been proposed in the literature, this library provides an efficient 
-implementation of the so-called spectral proper orthogonal decomposition 
-(SPOD) [@lumley1970], [@towne2017], that is also referred to as spectral 
+Several variants of singular-value decomposition based techniques 
+have been proposed in the literature, this library provides efficient 
+implementations of the spectral proper orthogonal decomposition 
+(SPOD) [@lumley1970], [@towne2017]. SPOD is also referred to as spectral 
 empirical orthogonal function (SEOF) in the weather and climate community 
 [@schmidt2019a]. SPOD differs from other SVD-based techniques as it is 
 derived from a standard (space-time) POD problem for stationary data and 
@@ -67,11 +67,12 @@ is not present in [@spod-code-jburrows]. Similar differences exist between
 
 # Capabilities 
 
-`PySPOD` is a modular Python package that implements three different variants 
-of SPOD, (i) a low storage, (ii) a low RAM, and (iii) a streaming version 
+`PySPOD` is a modular Python package that implements three different 
+variants of SPOD, (i) a low storage [@towne2017,@schmidt2019a], 
+(ii) a low RAM [@towne2017,@schmidt2019a], and (iii) a streaming version 
 [@schmidt2019b]. The three versions differ in terms of I/O and RAM requirements. 
 The low storage version allows faster computations, and it is intended for small 
-datasets, or large RAM machines. The low RAM and streaming versions can handle 
+datasets, or high RAM machines. The low RAM and streaming versions can handle 
 large datasets, but they are typically slower than the low storage counterpart. 
 The API to the library offers a flexible and user-friendly experience, and 
 the library can be complemented with additional SPOD algorithms in an easy-to-implement
