@@ -49,10 +49,21 @@ have been proposed in the literature, this library provides an efficient
 implementation of the so-called spectral proper orthogonal decomposition 
 (SPOD) [@lumley1970], [@towne2017], that is also referred to as spectral 
 empirical orthogonal function (SEOF) in the weather and climate community 
-[@schmidt2019a]. We note that for SPOD to be effective in identfying 
-spatio-temporal coherent patterns, the underlying data must be statistically 
-stationary (see also [@schmidt2020]).
-
+[@schmidt2019a]. SPOD differs from other SVD-based techniques as it is 
+derived from a standard (space-time) POD problem for stationary data and 
+leads to modes that are (i) time harmonic and oscillate at a single frequency, 
+(ii) are coherent in both time and space, (iii) optimally represent the space-time
+statistical variability of the underlying stationary random processes, and 
+(iv) are both spatially and space-time orthogonal (see also [@schmidt2020]). 
+We note that the `PySPOD` implements the Python counterpart of the Matlab 
+code in [@schmidt-code], with the addition of the streaming algorithm outlined 
+in [@schmidt2019b]. We also acknowledge that there exist other two Python 
+packages implementing SPOD. The first, [spod-code-jburrows], is also a 
+Python counterpart of the Matlab code in [@schmidt-code]. However, our 
+implementation provides extensive post-processing capabilities, testing, 
+and tutorial. It also adds the streaming version [@schmidt2019b], that 
+is not present in [spod-code-jburrows]. Similar differences exist between `PySPOD` 
+and the Python package presented in [spod-code-loiseau].
 
 # Capabilities 
 
