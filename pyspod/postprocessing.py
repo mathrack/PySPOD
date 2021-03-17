@@ -16,7 +16,7 @@ CWD = os.getcwd()
 CF = os.path.realpath(__file__)
 CFD = os.path.dirname(CF)
 BYTE_TO_GB = 9.3132257461548e-10
-
+print ('CFD path_', CFD)
 
 # getters
 # ---------------------------------------------------------------------------
@@ -361,6 +361,9 @@ def plot_2D_modes_at_frequency(modes, freq_required, freq, vars_idx=[0], modes_i
 	freq_val, freq_idx = find_nearest_freq(freq_required=freq_required, freq=freq)
 	modes = get_modes_at_freq(modes=modes, freq_idx=freq_idx)
 
+	# get period in days
+	freq_days = 1/freq_val  
+
 	# if domain dimensions have not been passed, use data dimensions
 	if x1 is None and x2 is None:
 		x1 = np.arange(modes.shape[0])
@@ -507,7 +510,7 @@ def plot_2D_modes_at_frequency(modes, freq_required, freq, vars_idx=[0], modes_i
 			# save or show plots
 			if filename:
 				if path == 'CWD': path = CWD
-				filename = '{0}_var{1}_mode{2}{3}'.format(basename, var_id, mode_id, ext)
+				filename = '{0}_var{1}_mode{2}_{3}_period{4}'.format(basename, var_id, mode_id, freq_days, ext)
 				plt.savefig(os.path.join(path,filename),dpi=400)
 				plt.close(fig)
 			if not filename:

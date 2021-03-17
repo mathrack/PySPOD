@@ -541,6 +541,24 @@ class SPOD_base(object):
 			return False
 
 	@staticmethod
+	def _are_freq_present(n_blocks, n_freq, saveDir, mode_save):
+		print('Checking if frequencies are already present ...')
+		all_Mode_Freq_exist = 0
+		for iFreq in range(0,n_freq):
+			file = os.path.join(saveDir,
+				'modes1to{:04d}_freq{:04d}.npy'.format(mode_save,iFreq))
+			if os.path.exists(file):
+				all_Mode_Freq_exist = all_Mode_Freq_exist + 1
+				#print('Mode 1 to '+str(mode_save+1)+'Freq'+str(iFreq)+'/'+str(n_freq)+\
+					#' is present in: ', saveDir)
+		if (all_Mode_Freq_exist == n_freq):
+			print('All frequncies file present for'+'Mode 1 to '+str(mode_save+1))
+			return True
+		else:
+			print('... Frequencies are not present/incomplete - proceeding to compute them.\n')
+			return False
+
+	@staticmethod
 	def _nextpow2(a):
 		'''
 			Returns the exponents for the smallest powers
@@ -811,7 +829,8 @@ class SPOD_base(object):
 
 	# Data-driven emulation (after modes and DFT blocks are saved to disk)
 	# ---------------------------------------------------------------------------
-	def get_coefficients(self):
+	
+	#def get_coefficients(self):
 		'''
 		Get Fourier transformed data and modes
 		'''
@@ -820,6 +839,7 @@ class SPOD_base(object):
 		Inner product for projection - requires loading Qfft blocks
 		'''
 		# Load modes
+		'''
 		n_modes_save = self._n_blocks
 		if 'n_modes_save' in self._params: n_modes_save = self._params['n_modes_save']
 
@@ -840,6 +860,7 @@ class SPOD_base(object):
 			# Save these coefficients for posterity
 			file_a_k = os.path.join(self._save_dir_blocks,'coeffs1to{:04d}_freq{:04d}.npy'.format(n_modes_save,iFreq))
 			np.save(file_a_k, a_k)
+			'''
 
 	def build_emulator(self):
 

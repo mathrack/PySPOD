@@ -110,71 +110,97 @@ class SPOD_low_ram(SPOD_base):
 		print('------------------------------------')
 		n_modes_save = self._n_blocks
 		if 'n_modes_save' in self._params: n_modes_save = self._params['n_modes_save']
-		self._eigs = np.zeros([self._n_freq,self._n_blocks], dtype='complex_')
+
+		self.nMode = n_modes_save
 		self._modes = dict()
-		gb_memory_modes = self._n_freq * self._nx * n_modes_save * sys.getsizeof(complex()) * BYTE_TO_GB
-		gb_memory_avail = shutil.disk_usage(CWD)[2] * BYTE_TO_GB
-		print('- Memory required for storing modes ~', gb_memory_modes , 'GB')
-		print('- Available storage memory          ~', gb_memory_avail , 'GB')
-		while gb_memory_modes >= 0.99 * gb_memory_avail:
-			print('Not enough storage memory to save all modes... halving modes to save.')
-			n_modes_save = np.floor(n_modes_save / 2)
+
+		# Check frequency file
+		freq_present = self._are_freq_present(self._n_blocks,self._n_freq,self._save_dir_blocks, self.nMode)
+
+		if not freq_present:
+			self._eigs = np.zeros([self._n_freq,self._n_blocks], dtype='complex_')
 			gb_memory_modes = self._n_freq * self._nx * n_modes_save * sys.getsizeof(complex()) * BYTE_TO_GB
-			if n_modes_save == 0:
-				raise ValueError('Memory required for storing at least one mode '
-								 'is equal or larger than available storage memory in your system ...\n'
-								 '... aborting computation...')
+			gb_memory_avail = shutil.disk_usage(CWD)[2] * BYTE_TO_GB
+			print('- Memory required for storing modes ~', gb_memory_modes , 'GB')
+			print('- Available storage memory          ~', gb_memory_avail , 'GB')
+			while gb_memory_modes >= 0.99 * gb_memory_avail:
+				print('Not enough storage memory to save all modes... halving modes to save.')
+				n_modes_save = np.floor(n_modes_save / 2)
+				gb_memory_modes = self._n_freq * self._nx * n_modes_save * sys.getsizeof(complex()) * BYTE_TO_GB
+				if n_modes_save == 0:
+					raise ValueError('Memory required for storing at least one mode '
+									 'is equal or larger than available storage memory in your system ...\n'
+									 '... aborting computation...')
 
-		# load FFT blocks from hard drive and save modes on hard drive (for large data)
-		for iFreq in tqdm(range(0,self._n_freq),desc='computing frequencies'):
+			# load FFT blocks from hard drive and save modes on hard drive (for large data)
+			for iFreq in tqdm(range(0,self._n_freq),desc='computing frequencies'):
 
-			# load FFT data from previously saved file
-			Q_hat_f = np.zeros([self._nx,self._n_blocks], dtype='complex_')
-			for iBlk in range(0,self._n_blocks):
-				file = os.path.join(self._save_dir_blocks,'fft_block{:04d}_freq{:04d}.npy'.format(iBlk,iFreq))
-				Q_hat_f[:,iBlk] = np.load(file)
-
-			# compute inner product in frequency space, for given frequency
-			M = np.matmul(Q_hat_f.conj().T, (Q_hat_f * self._weights)) / self._n_blocks
-
-			# extract eigenvalues and eigenvectors
-			L,V = la.eig(M)
-			L = np.real_if_close(L, tol=1000000)
-
-			# reorder eigenvalues and eigenvectors
-			idx = np.argsort(L)[::-1]
-			L = L[idx]
-			V = V[:,idx]
-
-			# compute spatial modes for given frequency
-			Psi = np.matmul(Q_hat_f, np.matmul(V, np.diag(1. / np.sqrt(L) / np.sqrt(self._n_blocks))))
-
-			# save modes in storage too in case post-processing crashes
-			Psi = Psi[:,0:n_modes_save]
-			Psi = Psi.reshape(self._xshape+(self._nv,)+(n_modes_save,))
-			file_psi = os.path.join(self._save_dir_blocks,'modes1to{:04d}_freq{:04d}.npy'.format(n_modes_save,iFreq))
-			np.save(file_psi, Psi)
-			self._modes[iFreq] = file_psi
-			self._eigs[iFreq,:] = abs(L)
-
-			# get and save confidence interval if required
-			if self._conf_interval:
-				self._eigs_c[iFreq,:,0] = self._eigs[iFreq,:] * 2 * self._n_blocks / self._xi2_lower
-				self._eigs_c[iFreq,:,1] = self._eigs[iFreq,:] * 2 * self._n_blocks / self._xi2_upper
-		self._eigs_c_u = self._eigs_c[:,:,0]
-		self._eigs_c_l = self._eigs_c[:,:,1]
-		file = os.path.join(self._save_dir_blocks,'spod_energy')
-		np.savez(file, eigs=self._eigs, eigs_c_u=self._eigs_c_u, eigs_c_l=self._eigs_c_l, f=self._freq)
-		self._n_modes = self._eigs.shape[-1]
-		self._n_modes_saved = n_modes_save
-
-
-		# delete FFT blocks from memory if saving not required
-		if self._savefft == False:
-			for iBlk in range(0,self._n_blocks):
-				for iFreq in range(0,self._n_freq):
+				# load FFT data from previously saved file
+				Q_hat_f = np.zeros([self._nx,self._n_blocks], dtype='complex_')
+				for iBlk in range(0,self._n_blocks):
 					file = os.path.join(self._save_dir_blocks,'fft_block{:04d}_freq{:04d}.npy'.format(iBlk,iFreq))
-					os.remove(file)
+					Q_hat_f[:,iBlk] = np.load(file)
+
+				# compute inner product in frequency space, for given frequency
+				M = np.matmul(Q_hat_f.conj().T, (Q_hat_f * self._weights)) / self._n_blocks
+
+				# extract eigenvalues and eigenvectors
+				L,V = la.eig(M)
+				L = np.real_if_close(L, tol=1000000)
+
+				# reorder eigenvalues and eigenvectors
+				idx = np.argsort(L)[::-1]
+				L = L[idx]
+				V = V[:,idx]
+
+				# compute spatial modes for given frequency
+				Psi = np.matmul(Q_hat_f, np.matmul(V, np.diag(1. / np.sqrt(L) / np.sqrt(self._n_blocks))))
+
+				# save modes in storage too in case post-processing crashes
+				Psi = Psi[:,0:n_modes_save]
+				Psi = Psi.reshape(self._xshape+(self._nv,)+(n_modes_save,))
+				file_psi = os.path.join(self._save_dir_blocks,'modes1to{:04d}_freq{:04d}.npy'.format(n_modes_save,iFreq))
+				np.save(file_psi, Psi)
+				self._modes[iFreq] = file_psi
+				self._eigs[iFreq,:] = abs(L)
+
+				# get and save confidence interval if required
+				if self._conf_interval:
+					self._eigs_c[iFreq,:,0] = self._eigs[iFreq,:] * 2 * self._n_blocks / self._xi2_lower
+					self._eigs_c[iFreq,:,1] = self._eigs[iFreq,:] * 2 * self._n_blocks / self._xi2_upper
+					
+			self._eigs_c_u = self._eigs_c[:,:,0]
+			self._eigs_c_l = self._eigs_c[:,:,1]
+			file = os.path.join(self._save_dir_blocks,'spod_energy_modes1to{:04d}'.format(n_modes_save))
+			np.savez(file, eigs=self._eigs, eigs_c_u=self._eigs_c_u, eigs_c_l=self._eigs_c_l, f=self._freq)
+			self._n_modes = self._eigs.shape[-1]
+			self._n_modes_saved = n_modes_save
+		else:
+			
+			file = os.path.join(self._save_dir_blocks,'spod_energy_modes1to{:04d}.npz'.format(n_modes_save))
+			load_spod_energy = np.load(file)
+			print(load_spod_energy.files)
+			#Artificially build mode directory
+			for iFreq in range(0,self._n_freq):
+				file_psi = os.path.join(self._save_dir_blocks,'modes1to{:04d}_freq{:04d}.npy'.format(n_modes_save,iFreq))
+				self._modes[iFreq] = file_psi
+			self._eigs = load_spod_energy["eigs"]
+			self._n_modes = self._eigs.shape[-1]
+			self._n_modes_saved = n_modes_save
+
+
+
+			# delete FFT blocks from memory if saving not required
+			if self._savefft == False:
+				for iBlk in range(0,self._n_blocks):
+					for iFreq in range(0,self._n_freq):
+						file = os.path.join(self._save_dir_blocks,'fft_block{:04d}_freq{:04d}.npy'.format(iBlk,iFreq))
+						os.remove(file)
+
+	
+
+
+	
 		print('------------------------------------')
 		print(' ')
 		print('Results saved in folder ', self._save_dir_blocks)

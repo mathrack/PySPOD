@@ -4,6 +4,7 @@ import xarray as xr
 import numpy  as np
 from pathlib import Path
 
+print ('Before start')
 sys.path.append("/hpctmp/e0546050/PySPOD/")
 import pyspod
 from pyspod.spod_low_storage import SPOD_low_storage
@@ -16,9 +17,12 @@ import pyspod.weights as weights
 CWD = os.getcwd()
 
 # Inspect and load data
+print (' Start here access file')
 file = os.path.join(CWD, 'data', 'E20C_MONTHLYMEAN00_1900_2010_MEI.nc')
 ds = xr.open_dataset(file)
+print ('Before ds')
 print(ds)
+print ('After ds\n')
 
 # we extract time, longitude and latitude
 t = np.array(ds['time'])
